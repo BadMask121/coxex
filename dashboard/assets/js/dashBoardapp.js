@@ -12,9 +12,16 @@ $(document).ready(function() {
     let firstPatentTextF = document.getElementById('firstPatentText')
     let secondPatentTextF = document.getElementById('secondPatentText')
 
-    let userId = getCookies("sessionID")
+    let realUserId = getCookies("sessionID")
+    let pkey = localStorage.getItem('pkey');
+    let userId = window.decrypt(realUserId, pkey);
+
     var file;
 
+
+    (typeof logOut !== "undefined") ? logOut.onclick = function() {
+        logout();
+    }: null;
 
     if (fileName === 'coxexDetect') {
 
@@ -22,55 +29,51 @@ $(document).ready(function() {
             file = event.target.files[0];
             fileUrls.firstPatentUrl = firstPatentFile;
         });
-    }
-
-    secondPatentFile.addEventListener('change', function(event) {
-        file = event.target.files[0];
-        fileUrls.secondPatentUrl = secondPatentFile;
-    });
 
 
-    (typeof logOut !== "undefined") ? logOut.onclick = function() {
-        logout();
-    }: null;
 
 
-    detect.onclick = function(e) {
-        let firstPatentText = firstPatentTextF.value;
-        let secondPatentText = secondPatentTextF.value;
+        secondPatentFile.addEventListener('change', function(event) {
+            file = event.target.files[0];
+            fileUrls.secondPatentUrl = secondPatentFile;
+        });
 
-        if (firstPatentText === "" || secondPatentText === "") {
-            alert("All fields are required")
-            return;
-        }
+        detect.onclick = function(e) {
+            let firstPatentText = firstPatentTextF.value;
+            let secondPatentText = secondPatentTextF.value;
 
-        data.firstPatent = {
-            fullname: firstPatentText
-        }
-        data.secondPatent = {
-            fullname: secondPatentText
-        }
+            if (firstPatentText === "" || secondPatentText === "") {
+                alert("All fields are required")
+                return;
+            }
 
-        if (fileUrls !== {}) {
-            Object.keys(fileUrls).forEach((key) => {
-                Object.keys(data).forEach(dataKey => {
+            data.firstPatent = {
+                fullname: firstPatentText
+            }
+            data.secondPatent = {
+                fullname: secondPatentText
+            }
 
-                    if (fileUrls.hasOwnProperty(key) && data.hasOwnProperty(dataKey)) {
-                        uploadFile(file)
-                            .then(res => {
-                                data[dataKey].fileurl = res;
-                                data[dataKey].userId = userId;
+            if (fileUrls !== {}) {
+                Object.keys(fileUrls).forEach((key) => {
+                    Object.keys(data).forEach(dataKey => {
 
-                                console.log(data);
-                                uploadData(data)
-                                    .then(res => {
-                                        console.log(res);
-                                    }).catch(err => console.warn(err))
-                            }).catch(err => console.warn(err))
-                    }
+                        if (fileUrls.hasOwnProperty(key) && data.hasOwnProperty(dataKey)) {
+                            uploadFile(file)
+                                .then(res => {
+                                    data[dataKey].fileurl = res;
+                                    data[dataKey].userId = userId;
+                                    uploadData(data)
+                                        .then(res => {
+                                            console.log(res);
+                                        }).catch(err => console.warn(err))
+                                }).catch(err => console.warn(err))
+                        }
+                    });
                 });
-            });
+            }
         }
+
     }
 
     //  const onProgress = (evt) => {
@@ -108,15 +111,11 @@ $(document).ready(function() {
         });
     }
 
-    console.log(getCookies("sessionID"));
+
 
     function logout() {
-
-
-        var sessionID = getCookies("sessionID");
-
         var formdata = {}
-        formdata.sessionID = sessionID;
+        formdata.id = userId;
 
         if (typeof(axios) !== 'undefinded') {
             axios({
@@ -129,9 +128,13 @@ $(document).ready(function() {
                 data: formdata
             }).then(function(response) {
                 console.log(response);
-                if (response.data.error !== null)
+                if (response.data.error === "userNotFound") {
                     alert("Error: Couldnt log Out please try again");
-                if (response.data.id === sessionID) {
+                    return;
+                }
+
+                if (response.data.response === "success") {
+                    window.deleteCookie()
                     window.open("/account/login.html?loggedout=true", "_self");
                     return true;
                 }

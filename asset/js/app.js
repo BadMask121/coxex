@@ -514,7 +514,7 @@ $(document).ready(function() {
             if (userId === null)
                 return false;
 
-            var sessionID = setCookies("sessionID", email.value, {
+            var sessionID = setCookies("sessionID", userId.toString(), {
                 path: '/',
                 expires: sessionexpire
             });
@@ -570,7 +570,7 @@ function encrypt(data) {
 }
 
 function decrypt(data) {
-    const pkey = localStorage.setItem("pkey")
+    const pkey = localStorage.getItem("pkey")
     if (pkey != null ||
         pkey !== undefined &
         typeof(CryptoJS) !== 'undefined' &&
@@ -617,7 +617,6 @@ function deleteCookie(a = null) {
     if (a !== null) {
         a = Cookies.get(a);
         Cookies.remove(a, attr);
-        // window.location = '/?logged_out=true';
         return true;
     }
 

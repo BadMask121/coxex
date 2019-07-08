@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
+import io.airbrake.javabrake.Notifier;
 @SpringBootApplication
 public class CoxexApplication {
 	
@@ -15,6 +15,10 @@ public class CoxexApplication {
 	
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(CoxexApplication.class, args);
+//		
+//		  int projectId = 234752;
+//		    String projectKey = "798aa0942fc6ee5f47981fa649334c78";
+//		    Notifier notifier = new Notifier(projectId, projectKey);
 	}
 
 	

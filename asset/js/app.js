@@ -513,8 +513,6 @@ $(document).ready(function() {
                 path: '/',
                 expires: sessionexpire
             });
-
-            console.log(sessionID);
             if (sessionID !== null) {
 
                 resolve(sessionID)

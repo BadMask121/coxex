@@ -15,7 +15,7 @@
 	<description>Backend for Coxex a content plagism checker</description>
 
 	<properties>
-		<java.version>8</java.version>
+		<java.version>10</java.version>
 	</properties>
 
 	<dependencies>

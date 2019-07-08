@@ -15,7 +15,11 @@
 	<description>Backend for Coxex a content plagism checker</description>
 
 	<properties>
+<<<<<<< HEAD
 		<java.version>10</java.version>
+=======
+		<java.version>8</java.version>
+>>>>>>> 9df9d1d6a6ecef4962ba7689894033ddbc13d9e7
 	</properties>
 
 	<dependencies>

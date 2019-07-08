@@ -41,5 +41,8 @@ public class RequestFactory {
 		throw new CoxexErrorHandler();
 	}
 	
-	
+	@GetMapping("/")
+	public ResponseEntity<Object> notAllowedPage(){
+		throw new CoxexErrorHandler();
+	}
 }

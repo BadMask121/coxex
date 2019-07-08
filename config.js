@@ -16,4 +16,4 @@ const config = {
     login: this.request + "/login",
     apiKey: "A8RWXSNHMQU6mW4UeEkn9z"
 }
-ConfigData = ' {"FRONT_END_PRIVATE_KEY": \"' + pkey_maker + '\"  , "SIGNUP_SCRIPT_URL" : "' + config.host + '/signup","LOGIN_SCRIPT_URL":"' + config.host + '/login", "CHECK_SESSION_SCRIPT_URL" : "' + config.host + '/checkSession" , "LOGOUT_SCRIPT_URL" : "http://localhost:444/CleedBackEnd/request/RequestLogout.php","UPDATE_SESSION_SCRIPT_URL" : "http://localhost:444/CleedBackEnd/request/RequestUpdateSession.php","SEND_PATENT_SCRIPT_URL" : "http://localhost:444/CleedBackEnd/request/RequestGetId.php" }';
+ConfigData = ' {"FRONT_END_PRIVATE_KEY": \"' + pkey_maker + '\"  , "SIGNUP_SCRIPT_URL" : "' + config.host + '/signup","LOGIN_SCRIPT_URL":"' + config.host + '/login", "CHECK_SESSION_SCRIPT_URL" : "' + config.host + '/checkSession" , "LOGOUT_SCRIPT_URL" : "' + config.host + '/logout","UPDATE_SESSION_SCRIPT_URL" : "' + config.host + '/checkSession","SEND_PATENT_SCRIPT_URL" : "' + config.host + '/detector" }';

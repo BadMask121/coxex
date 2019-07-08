@@ -1,8 +1,10 @@
-const clientUpload = filestack.init(config.apiKey)
+if (typeof filestack !== 'undefined') {
+    const clientUpload = filestack.init(config.apiKey)
+}
+
 
 var fileUrls = {};
 var data = {};
-
 $(document).ready(function() {
 
     let firstPatentFile = document.getElementById('firstPatentFile');
@@ -14,16 +16,18 @@ $(document).ready(function() {
     var file;
 
 
-    firstPatentFile.addEventListener('change', function(event) {
-        file = event.target.files[0];
-        fileUrls.firstPatentUrl = firstPatentFile;
-    });
+    if (fileName === 'coxexDetect') {
+
+        firstPatentFile.addEventListener('change', function(event) {
+            file = event.target.files[0];
+            fileUrls.firstPatentUrl = firstPatentFile;
+        });
+    }
 
     secondPatentFile.addEventListener('change', function(event) {
         file = event.target.files[0];
         fileUrls.secondPatentUrl = secondPatentFile;
     });
-
 
 
     (typeof logOut !== "undefined") ? logOut.onclick = function() {
@@ -104,30 +108,34 @@ $(document).ready(function() {
         });
     }
 
+    console.log(getCookies("sessionID"));
+
     function logout() {
 
 
         var sessionID = getCookies("sessionID");
-        var formdata = new FormData
 
-        formdata.append("logoutSession", true);
-        formdata.append("sessionID", sessionID);
+        var formdata = {}
+        formdata.sessionID = sessionID;
+
         if (typeof(axios) !== 'undefinded') {
             axios({
                 method: "POST",
                 url: LOGOUT_SCRIPT_URL,
-                crossdomain: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                crossDomain: true,
                 data: formdata
             }).then(function(response) {
                 console.log(response);
-                if (response.data['status'] == "success") {
+                if (response.data.error !== null)
+                    alert("Error: Couldnt log Out please try again");
+                if (response.data.id === sessionID) {
                     window.open("/account/login.html?loggedout=true", "_self");
                     return true;
-                } else
-                if (response.data['status'] == "failed") {
-                    alert("Error: Couldnt log Out please try again");
-                    return false;
                 }
+
             });
         }
 

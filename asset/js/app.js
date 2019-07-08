@@ -77,7 +77,8 @@
 //# sourceMappingURL=/sm/203d9606ffea7a776ef56994ac4d4a1ab0a18611bf5f22fd2f82e9b682eea54f.map
 
 
-var fileName = location.pathname.split("/").slice(-1);
+var file = location.pathname.split("/").slice(-1);
+var fileName = file[0].split(".")[0];
 const CONFIG = JSON.parse(ConfigData);
 //assign our requestURL global variable to reduce redundancy 
 const SIGNUP_SCRIPT_URL = CONFIG.SIGNUP_SCRIPT_URL;
@@ -229,7 +230,7 @@ $(document).ready(function() {
             }
 
             let formdata = JSON.stringify(data);
-            
+
             deactiveSignUpField();
             errorMessage.innerHTML = "Verifying Please wait...";
             if (typeof(axios) !== 'undefinded') {
@@ -260,22 +261,22 @@ $(document).ready(function() {
                         return false;
                     }
 
-                    // console.log(response.data);
-                    if ( typeof response.data.id !== 'undefined') {
-                            updateSession(response.data.id).then(function(result) {
-                                errorMessage.style.color = "green";
-                                errorMessage.innerHTML = "Welcome " + email.value + " You'll Signed In Shortly";
 
-                                setTimeout(() => {
-                                    window.open("/dashboard/index.html", "_self");
-                                }, 3000);
-                                return;
+                    if (typeof response.data.id !== 'undefined') {
+                        updateSession(response.data.id).then(function(result) {
+                            errorMessage.style.color = "green";
+                            errorMessage.innerHTML = "Welcome " + email.value + " You'll Signed In Shortly";
 
-                            }).catch(function(err) {
-                                errorMessage.style.color = "red";
-                                errorMessage.innerHTML = err;
-                                activeSignUpField();
-                            });
+                            setTimeout(() => {
+                                window.open("/dashboard/index.html", "_self");
+                            }, 3000);
+                            return;
+
+                        }).catch(function(err) {
+                            errorMessage.style.color = "red";
+                            errorMessage.innerHTML = err;
+                            activeSignUpField();
+                        });
 
 
                     } else if (response.data.error === "failed") {
@@ -288,9 +289,9 @@ $(document).ready(function() {
                         return false;
                     }
                 }).catch(function(error) {
-                        errorMessage.innerHTML = "Error: Please try again or contact customer support";
-                        activeSignUpField();
-                        return false;
+                    errorMessage.innerHTML = "Error: Please try again or contact customer support";
+                    activeSignUpField();
+                    return false;
                 });
             }
 
@@ -362,26 +363,25 @@ $(document).ready(function() {
 
                     if (typeof(response.data.id) !== 'undefined') {
 
+                        updateSession(response.data.id).then(function(result) {
+                            errorMessage.style.color = "green";
+                            errorMessage.innerHTML = "Sign Up Successful !!!";
+                            setTimeout(() => {
+                                window.open("/dashboard/index.html", "_self");
+                            }, 3000);
+                            return;
 
-                            updateSession(response.data.id).then(function(result) {
-                                errorMessage.style.color = "green";
-                                errorMessage.innerHTML = "Sign Up Successful !!!";
-                                setTimeout(() => {
-                                    window.open("/dashboard/index.html", "_self");
-                                }, 3000);
-                                return;
-
-                            }).catch(function(err) {
-                                errorMessage.style.color = "red";
-                                errorMessage.innerHTML = err;
-                                activeSignUpField();
-                            });
+                        }).catch(function(err) {
+                            errorMessage.style.color = "red";
+                            errorMessage.innerHTML = err;
+                            activeSignUpField();
+                        });
 
                         return true;
-                    } 
+                    }
                 }).catch((error) => {
 
-                    if(error.response){
+                    if (error.response) {
                         if (error.response.data.error === "errorEmail") {
                             errorMessage.innerHTML = "Please enter a valid email";
                             activeSignUpField();
@@ -442,7 +442,7 @@ $(document).ready(function() {
      * @method sessionAlive 
      * checks if user session if still set
      */
-     function sessionAlive() {
+    function sessionAlive() {
 
         return new Promise((resolve, reject) => {
 
@@ -451,14 +451,14 @@ $(document).ready(function() {
                 reject(sessionID);
             }
 
-            let formdata =  {}
+            let formdata = {}
 
             if (typeof(axios) !== 'undefinded') {
                 formdata.sessionID("sessionID", sessionID);
                 axios({
                     method: "POST",
                     url: CHECK_SESSION_SCRIPT_URL,
-                     headers: {
+                    headers: {
                         'Content-Type': 'application/json'
                     },
                     crossDomain: true,
@@ -510,7 +510,6 @@ $(document).ready(function() {
     //updates userSession on server
     function updateSession(userId) {
 
-
         return new Promise((resolve, reject) => {
             if (userId === null)
                 return false;
@@ -521,33 +520,11 @@ $(document).ready(function() {
             });
 
 
-            if(sessionID !== null)
-                {
-                    resolve(sessionID)
-                    return;
-                }
-                reject(null);
-            // var formdata = new FormData;
-            // formdata.append("sessionID", sessionID);
-            // formdata.append("userID", userId);
-
-            // if (typeof(axios) !== 'undefinded') {
-            //     axios({
-            //         method: "POST",
-            //         crossdomain: true,
-            //         url: UPDATE_SESSION_SCRIPT_URL,
-            //         data: formdata
-            //     }).then(function(response) {
-            //         if (response.data["status"] == "success") {
-            //             resolve(response.data["status"]);
-            //         } else if (response.data["status"] = "failed") {
-            //             reject(response.data["status"]);
-            //         }
-            //     }).catch(function(error) {
-            //         reject(error);
-            //     });
-            // }
-            // reject(false);
+            if (sessionID !== null) {
+                resolve(sessionID)
+                return;
+            }
+            reject(null);
         });
 
     }
@@ -572,7 +549,10 @@ $(document).ready(function() {
     }
 
 
-
+    window.getCookies = getCookies;
+    window.setCookies = setCookies;
+    window.encrypt = encrypt;
+    window.decrypt = decrypt;
 }());
 
 
@@ -581,18 +561,22 @@ function encrypt(data) {
         CLIENT_PRIVATE_KEY !== undefined &
         typeof(CryptoJS) !== 'undefined' &&
         typeof(salt) !== 'undefined') {
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem("pkey", CLIENT_PRIVATE_KEY)
+        }
         return CryptoJS.AES.encrypt(data, CLIENT_PRIVATE_KEY).toString();
     }
     return null;
 }
 
 function decrypt(data) {
-    if (CLIENT_PRIVATE_KEY != null ||
-        CLIENT_PRIVATE_KEY !== undefined &
+    const pkey = localStorage.setItem("pkey")
+    if (pkey != null ||
+        pkey !== undefined &
         typeof(CryptoJS) !== 'undefined' &&
         typeof(salt) !== 'undefined') {
 
-        a = CryptoJS.AES.decrypt(data, CLIENT_PRIVATE_KEY);
+        a = CryptoJS.AES.decrypt(data, pkey);
         return a.toString(CryptoJS.enc.Utf8);
     }
     return null;
@@ -617,7 +601,8 @@ function setCookies(key, value, properties = null) {
         };
     }
 
-    if (value != undefined || value != "")       // value = encrypt(value);
+    if (value != undefined || value != "")
+        value = encrypt(value);
     Cookies.set(key, value, properties);
 
     return value;

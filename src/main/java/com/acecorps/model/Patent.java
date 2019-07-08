@@ -9,7 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Entity 
+@Entity
 @Table(name="coxex_patent")
 @EntityListeners(AuditingEntityListener.class)
 public class Patent {
@@ -21,7 +21,6 @@ public class Patent {
 
 	private long userId;
 	
-	
 	private String firstPatent;
 	
 	private String secondPatent;
@@ -31,17 +30,65 @@ public class Patent {
 	@LastModifiedDate
 	private Date createdDate;
 
+	private String firstPatentFullname;
+	
+	private String secondPatentFullname;
 
-	private String fileurl;
+	
+	private String firstPatentFileurl;
+	
+	private String secondPatentFileurl;
 	
 	
-	public String getFileurl() {
-		return fileurl;
+	public String getFirstPatentFullname() {
+		return firstPatentFullname;
 	}
 
 
-	public void setFileurl(String fileurl) {
-		this.fileurl = fileurl;
+	public void setFirstPatentFullname(String firstPatentFullname) {
+		this.firstPatentFullname = firstPatentFullname;
+	}
+
+
+	public String getSecondPatentFullname() {
+		return secondPatentFullname;
+	}
+
+
+	public void setSecondPatentFullname(String secondPatentFullname) {
+		this.secondPatentFullname = secondPatentFullname;
+	}
+
+
+	
+//	
+//	public String getFileurl() {
+//		return fileurl;
+//	}
+//
+//
+//	public void setFileurl(String fileurl) {
+//		this.fileurl = fileurl;
+//	}
+
+
+	public String getFirstPatentFileurl() {
+		return firstPatentFileurl;
+	}
+
+
+	public void setFirstPatentFileurl(String firstPatentFileurl) {
+		this.firstPatentFileurl = firstPatentFileurl;
+	}
+
+
+	public String getSecondPatentFileurl() {
+		return secondPatentFileurl;
+	}
+
+
+	public void setSecondPatentFileurl(String secondPatentFileurl) {
+		this.secondPatentFileurl = secondPatentFileurl;
 	}
 
 

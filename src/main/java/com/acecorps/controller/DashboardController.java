@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.PostPersist;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ public class DashboardController {
 	
 	@PostMapping("/detector")
 	public Patent detect(@Valid @RequestBody Patent patent) {
+		
 		return patentdao.create(patent);
 	}
 	
@@ -51,6 +53,7 @@ public class DashboardController {
 	public List<Patent> listPatent(@Valid @RequestBody Patent patent){
 		return patentdao.findByUserId(patent);
 	}
+	
 	
 	
 }

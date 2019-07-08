@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.acecorps.repository.UserRepo;
 import com.acecorps.CoxexApplication;
 import com.acecorps.errorHandler.CoxexCustomException;
+import com.acecorps.errorHandler.CoxexErrorResult;
 import com.acecorps.miscellenous.Utility;
 import com.acecorps.model.User;
 
@@ -23,8 +24,7 @@ public class UserDAO {
 	//autowire User respoitory
 	@Autowired
 	UserRepo userepo;
-	
-	
+		
 	// validate and create user data
 	public User create(User data) {
 		
@@ -33,14 +33,17 @@ public class UserDAO {
 		
 		String encPassword = Utility.encrypt(password);
 		
-		if(!Utility.isValidEmail(email))
-				throw new CoxexCustomException("Invalid Email Address");
+		if(isUserExist(data, "email"))
+			throw new CoxexCustomException("errorRegistered");
 		
-		if(password.length() > 20 ) //check for password length
-				throw new CoxexCustomException("Password lenght must be between 0-20");
+		if(!Utility.isValidEmail(email))
+				throw new CoxexCustomException("errorEmail");
+		
+		if(password.length() < 6 ) //check for password length
+				throw new CoxexCustomException("errorPassword");
 		
 		if(encPassword == null) //check is encrypted password returned null
-				throw new CoxexCustomException("Request failed");
+				throw new CoxexCustomException("failed");
 		
 		data.setPassword(encPassword);
 		return userepo.save(data);
@@ -67,37 +70,50 @@ public class UserDAO {
 	//check your detials on params to match with data from User table
 	public Map< String , Object> login(User user) {
 		
-		Map<String, Object> result = new HashMap<>();
+		Map<String, Object> result = new HashMap<String, Object>();
 		String matchPassword = null;
 		Long id 			 = null;
+		String matchEmail = null;
 		
 		
 		
 		String getPassword 	 = user.getPassword();
 		String email 		 = user.getEmail();
 		
+		
 		if(!Utility.isValidEmail(email))
-				throw new CoxexCustomException("Invalid Email Address");
+				return CoxexErrorResult.sendError("failed");
+		
+		if(!isUserExist(user, "email")) {
+			result.put("error" , "failed");
+			return result;
+		}
+
 		
 		if(getPassword.isEmpty())
-				throw new CoxexCustomException("Password must not be empty");
+				return CoxexErrorResult.sendError("errorEmptyPassword");
 		
+		if(getPassword.length() < 6)
+				return CoxexErrorResult.sendError("errorPassword");
+	
 		List<User> userDetials = userepo.findByEmail(email);
 
 		for (User users : userDetials) {
 			matchPassword = users.getPassword();
 			id  		  = users.getId();
+			matchEmail = users.getEmail();
 		}
 		
 		if(matchPassword.isEmpty())
-				throw new CoxexCustomException("Server Error");
+				return CoxexErrorResult.sendError("Server Error");
 		
 		matchPassword = Utility.decrypt(matchPassword);
-		if( matchPassword.equals(getPassword.trim()) ) {
+		if( matchPassword.equals(getPassword.trim()) && matchEmail.equals(email)) {
 			result.put("id", id);
 			result.put("email", user.getEmail());
-		}else
-			throw new CoxexCustomException("Invalid login credentials");
+		}else 
+				return CoxexErrorResult.sendError("failed");
+			
 			
 		return result;
 	}

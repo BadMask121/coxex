@@ -5,9 +5,17 @@ import javax.validation.constraints.NotBlank;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Entity
 @Table(name= "coxex_users")
 @EntityListeners(AuditingEntityListener.class)
+@Data
+@NoArgsConstructor
 public class User {
 	
 	@Id
@@ -15,7 +23,6 @@ public class User {
 	private long id;
 
 
-	@NotBlank
 	private String fullname;
 	
 	@NotBlank

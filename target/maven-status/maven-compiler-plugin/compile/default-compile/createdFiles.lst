@@ -1,0 +1,16 @@
+com\acecorps\errorHandler\CoxexErrorHandler.class
+com\acecorps\errorHandler\CoxexErrorResult.class
+com\acecorps\repository\PatentRepo.class
+com\acecorps\errorHandler\CoxexCustomException.class
+com\acecorps\model\dao\PatentDAO.class
+com\acecorps\CoxexApplication$1.class
+com\acecorps\model\User.class
+com\acecorps\repository\UserRepo.class
+com\acecorps\controller\UserController.class
+com\acecorps\controller\RequestFactory.class
+com\acecorps\CoxexApplication.class
+com\acecorps\controller\DashboardController.class
+com\acecorps\model\dao\UserDAO.class
+com\acecorps\errorHandler\CoxexException.class
+com\acecorps\model\Patent.class
+com\acecorps\miscellenous\Utility.class

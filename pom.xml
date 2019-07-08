@@ -12,7 +12,7 @@
 	<artifactId>coxex</artifactId>
 	<version>0.0.1</version>
 	<name>coxex</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Backend for Coxex a content plagism checker</description>
 
 	<properties>
 		<java.version>12</java.version>
@@ -56,6 +56,15 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20171018</version>
+		</dependency>
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			 <groupId>com.fasterxml.jackson.core</groupId>
+			 <artifactId>jackson-databind</artifactId>
 		</dependency>
 	</dependencies>
 

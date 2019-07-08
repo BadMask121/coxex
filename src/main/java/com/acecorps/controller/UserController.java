@@ -54,4 +54,9 @@ public class UserController {
 		return userdao.login(user);
 	}
 	
+	@PostMapping("/checkSession")
+	public Map<String , Object> checkSession(@Valid @RequestBody User user) {
+		return userdao.checkSession(user);
+	}
+	
 }

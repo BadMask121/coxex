@@ -118,6 +118,18 @@ public class UserDAO {
 		return result;
 	}
 
+	public Map<String, Object> checkSession(User user) {
+		Map<String, Object> res = new HashMap<String, Object>();
+
+		if(!isUserExistById(user.getId())) {
+			res.put("error", "userNotFound");
+			return res;
+		}
+		
+		res.put("response", "success");
+		return res;
+	}
+	
 	//check is user exists by id
 	public boolean isUserExistById(Long id) {
 		Optional<User> userdetail = userepo.findById(id);			
@@ -142,6 +154,9 @@ public class UserDAO {
 		
 		return false;
 	}
+
+
+
 	
 	
 	

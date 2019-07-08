@@ -4,8 +4,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import com.acecorps.errorHandler.CoxexErrorHandler;
+
 import io.airbrake.javabrake.Notifier;
 @SpringBootApplication
 public class CoxexApplication {
@@ -21,7 +26,6 @@ public class CoxexApplication {
 //		    Notifier notifier = new Notifier(projectId, projectKey);
 	}
 
-	
 	@Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {

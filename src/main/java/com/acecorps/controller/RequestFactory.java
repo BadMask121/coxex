@@ -26,7 +26,6 @@ import com.acecorps.model.dao.UserDAO;
 import com.acecorps.repository.UserRepo;
 
 @RestController
-@RequestMapping("/request")
 public class RequestFactory {
 
 	
@@ -42,22 +41,5 @@ public class RequestFactory {
 		throw new CoxexErrorHandler();
 	}
 	
-	
-	@PostMapping("/signup")
-	public User signup(@Valid @RequestBody User user) {		
-		if (userdao.isUserExist(user, "email")) {
-			throw new CoxexCustomException("User Already Exists");
-		}
-		return userdao.create(user);
-	}
-	
-	
-	@PostMapping("/login")
-	public Map< String , Object> login(@Valid @RequestBody User user) {
-		if(!userdao.isUserExist(user , "email"))
-			throw new CoxexCustomException("User doesnt with this email");
-
-		return userdao.login(user);
-	}
 	
 }

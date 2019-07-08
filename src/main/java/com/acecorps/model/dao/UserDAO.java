@@ -120,11 +120,7 @@ public class UserDAO {
 
 	//check is user exists by id
 	public boolean isUserExistById(Long id) {
-		Optional<User> userdetail = userepo.findById(id);
-		
-			if(userdetail.isEmpty())
-				return false;
-			
+		Optional<User> userdetail = userepo.findById(id);			
 		User user = userdetail.get();
 		if(user.getId() == id)
 			return true;

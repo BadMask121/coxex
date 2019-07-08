@@ -100,52 +100,17 @@ var sessionexpire = new Date(new Date().getTime() + 60 * 170 * 60 * 1000);
 $(document).ready(function() {
 
 
+    /***
+     * @method checkSession checks for user check on page ready
+     */
+    checkSession()
 
-
-    // sessionAlive().then(function(res) {
-    //     if (typeof(loginBtn) !== 'undefined') {
-    //         loginBtn.style.background = "#ddd";
-    //         loginBtn.style.color = "#113327";
-    //         loginBtn.innerHTML = "Go to Dashboard";
-    //         loginBtn.style.width = "auto";
-    //         loginBtn.style.marginLeft = "-60px";
-    //         loginBtn.setAttribute("href", "/dashboard/index.html");
-    //     }
-    //     if (fileName == "login.html") {
-    //         window.open("/dashboard/index.html", "_self");
-    //     }
-
-    // }).catch(function(err) {
-    //     setCookies("sessionID", null);
-    //     if (fileName == "login.html" || fileName == "app.html")
-    //         return false;
-    //     window.open("/account/login.html?loggedout=true", "_self");
-    // });
-
-
-    // setInterval(() => {
-    //     sessionAlive().then(function(res) {
-    //         if (typeof(loginBtn) !== 'undefined') {
-    //             loginBtn.style.background = "#ddd";
-    //             loginBtn.style.color = "#113327";
-    //             loginBtn.innerHTML = "Go to Dashboard";
-    //             loginBtn.style.width = "auto";
-    //             loginBtn.style.marginLeft = "-60px";
-    //             loginBtn.setAttribute("href", "/dashboard/index.html");
-    //         }
-    //         if (fileName == "login.html") {
-    //             window.open("/dashboard/index.html", "_self");
-    //         }
-
-    //     }).catch(function(err) {
-    //         console.log(err);
-    //         setCookies("sessionID");
-    //         if (fileName == "login.html" || fileName == "app.html")
-    //             return false;
-    //         window.open("/account/login.html?loggedout=true", "_self");
-    //     });
-
-    // }, 30000);
+    /**
+     * @setInterval checks session every 30 seconds
+     */
+    setInterval(() => {
+        checkSession()
+    }, 30000);
 
     (typeof(signupbtn) !== 'undefined') ? signupbtn.onclick = function() {
         signup();
@@ -437,6 +402,32 @@ $(document).ready(function() {
         (typeof(signupbtn) !== 'undefined') ? signupbtn.disabled = false: null;
     }
 
+
+    function checkSession() {
+
+        sessionAlive().then(function(res) {
+            if (typeof(loginBtn) !== 'undefined') {
+                loginBtn.style.background = "#ddd";
+                loginBtn.style.color = "#113327";
+                loginBtn.innerHTML = "Go to Dashboard";
+                loginBtn.style.width = "auto";
+                loginBtn.style.marginLeft = "-60px";
+                loginBtn.setAttribute("href", "/dashboard/index.html");
+            }
+            if (fileName === "login") {
+                window.open("/dashboard/index.html", "_self");
+            }
+
+        }).catch(function(err) {
+            deleteCookie();
+            if (typeof err.error === 'undefined')
+                return;
+
+            if (fileName === "login" || fileName === "app")
+                return false;
+            window.open("/account/login.html?loggedout=true", "_self");
+        });
+    }
     /**
      * 
      * @method sessionAlive 
@@ -446,15 +437,19 @@ $(document).ready(function() {
 
         return new Promise((resolve, reject) => {
 
-            var sessionID = getCookies("sessionID");
-            if (sessionID == undefined) {
-                reject(sessionID);
+            let realUserId = getCookies("sessionID")
+            let pkey = localStorage.getItem('pkey');
+            let userId = decrypt(realUserId, pkey);
+
+            if (typeof realUserId === 'undefined') {
+                reject({ error: "userNotFound" });
+                return;
             }
 
             let formdata = {}
 
             if (typeof(axios) !== 'undefinded') {
-                formdata.sessionID("sessionID", sessionID);
+                formdata.id = userId;
                 axios({
                     method: "POST",
                     url: CHECK_SESSION_SCRIPT_URL,
@@ -464,14 +459,15 @@ $(document).ready(function() {
                     crossDomain: true,
                     data: JSON.stringify(formdata)
                 }).then(function(response) {
-                    // console.log(response.data);
-                    if (response.data['status'] == "success") {
-                        resolve(response.data['status']);
-                    } else if (response.data['status'] == "failed") {
-                        reject(response.data['status']);
+                    if (response.data.error === "userNotFound") {
+                        alert("Error: Couldnt log Out please try again");
+                        return;
+                    }
+                    if (response.data.response === "success") {
+                        resolve(response)
+                        return true;
                     }
                 }).catch(function(err) {
-                    console.log(err);
                     reject(err);
                 });
 
@@ -513,14 +509,14 @@ $(document).ready(function() {
         return new Promise((resolve, reject) => {
             if (userId === null)
                 return false;
-
             var sessionID = setCookies("sessionID", userId.toString(), {
                 path: '/',
                 expires: sessionexpire
             });
 
-
+            console.log(sessionID);
             if (sessionID !== null) {
+
                 resolve(sessionID)
                 return;
             }
@@ -557,10 +553,10 @@ $(document).ready(function() {
 
 
 function encrypt(data) {
-    if (CLIENT_PRIVATE_KEY != null ||
-        CLIENT_PRIVATE_KEY !== undefined &
-        typeof(CryptoJS) !== 'undefined' &&
-        typeof(salt) !== 'undefined') {
+
+    if (
+        typeof CLIENT_PRIVATE_KEY !== 'undefined' &&
+        typeof CryptoJS !== 'undefined') {
         if (typeof localStorage !== 'undefined') {
             localStorage.setItem("pkey", CLIENT_PRIVATE_KEY)
         }
@@ -571,10 +567,10 @@ function encrypt(data) {
 
 function decrypt(data) {
     const pkey = localStorage.getItem("pkey")
-    if (pkey != null ||
-        pkey !== undefined &
-        typeof(CryptoJS) !== 'undefined' &&
-        typeof(salt) !== 'undefined') {
+    if (
+        typeof pkey !== 'undefined' &&
+        typeof CryptoJS !== 'undefined'
+    ) {
 
         a = CryptoJS.AES.decrypt(data, pkey);
         return a.toString(CryptoJS.enc.Utf8);
@@ -626,7 +622,9 @@ function deleteCookie(a = null) {
             return false;
         }
     });
-    // window.location = '/?logged_out=true';
+
+    localStorage.removeItem('pkey')
+        // window.location = '/?logged_out=true';
     return false;
 }
 

@@ -127,7 +127,6 @@ $(document).ready(function() {
                 crossDomain: true,
                 data: formdata
             }).then(function(response) {
-                console.log(response);
                 if (response.data.error === "userNotFound") {
                     alert("Error: Couldnt log Out please try again");
                     return;

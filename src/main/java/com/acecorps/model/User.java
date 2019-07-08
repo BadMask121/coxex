@@ -25,10 +25,8 @@ public class User {
 
 	private String fullname;
 	
-	@NotBlank
 	private String email;
 	
-	@NotBlank
 	private String password;
 
 	
